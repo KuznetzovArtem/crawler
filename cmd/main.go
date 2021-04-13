@@ -14,13 +14,6 @@ import (
 	"time"
 )
 
-// sync.map
-// Int * что=то
-// DAta mapepr
-// в каких случаязх капасити увеличивается не в 2 раза
-// вилы или оконные функции что это
-// каналы 2 значения возвращают
-// иператив или декларативный
 func main() {
 	host := env.GetEnvString("API_ADDRESS", ":8004")
 	errorChannel := make(chan error)

@@ -35,11 +35,6 @@ func (h *taskHandler) Routes(router chi.Router) {
 
 // createTask this is method which preparing income and out data
 func (h *taskHandler) createTask(w http.ResponseWriter, r *http.Request) {
-	var (
-		response *domain.Response
-		err      error
-		request  domain.Request
-	)
 	requestBody, err := ioutil.ReadAll(r.Body)
 	defer func(request *http.Request) {
 		if msg := recover(); msg != nil {
@@ -51,18 +46,7 @@ func (h *taskHandler) createTask(w http.ResponseWriter, r *http.Request) {
 
 		}
 	}(r)
-	err = json.Unmarshal(requestBody, &request)
-	if err != nil {
-		go h.log.Log(logger.Error, err.Error())
-		h.encoder.Error(w, err, http.StatusInternalServerError)
-		return
-	}
-	if response, err = h.tasks.Do(request); err != nil {
-		go h.log.Log(logger.Error, err.Error())
-		h.encoder.Error(w, err, http.StatusInternalServerError)
-		return
-	}
-	jsonResponse, err := json.Marshal(response)
+	jsonResponse, err := h.sendRequest(requestBody)
 	if err != nil {
 		go h.log.Log(logger.Error, err.Error())
 		h.encoder.Error(w, err, http.StatusInternalServerError)
@@ -70,4 +54,25 @@ func (h *taskHandler) createTask(w http.ResponseWriter, r *http.Request) {
 	}
 	h.encoder.StatusResponse(w, jsonResponse, http.StatusOK)
 	return
+}
+
+// sendRequest - function send request to special task
+func (h *taskHandler) sendRequest(requestBody []byte) ([]byte, error) {
+	var (
+		response *domain.Response
+		err      error
+		request  domain.Request
+	)
+	err = json.Unmarshal(requestBody, &request)
+	if err != nil {
+		return nil, err
+	}
+	if response, err = h.tasks.Do(request); err != nil {
+		return nil, err
+	}
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		return nil, err
+	}
+	return jsonResponse, nil
 }

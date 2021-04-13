@@ -14,10 +14,12 @@ type HTTPClient interface {
 	SendRequest(ctx context.Context, wg *sync.WaitGroup, addr string, out chan Info)
 }
 
+// Client - model which extract data via http from resource
 type Client struct {
 	transport http.RoundTripper
 }
 
+// SendRequest - function send request and extract values from response
 func (C *Client) SendRequest(ctx context.Context, wg *sync.WaitGroup, addr string, out chan Info) {
 	defer wg.Done()
 	// Setup http transport.
@@ -71,6 +73,7 @@ func (C *Client) SendRequest(ctx context.Context, wg *sync.WaitGroup, addr strin
 	}
 }
 
+// ExtractTitle - this function extracts title from html
 func ExtractTitle(responseBody []byte) string {
 	var re = regexp.MustCompile(`(?m)<\s*title[^>]*>((.|\n)*?)<\s*\/\s*title>`)
 	result := re.FindSubmatch(responseBody)

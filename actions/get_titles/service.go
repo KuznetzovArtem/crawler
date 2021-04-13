@@ -8,10 +8,12 @@ import (
 	"sync"
 )
 
+// GetTitles - this implementation of logic to extract some values by url
 type GetTitles struct {
 	client HTTPClient
 }
 
+// Do - marshal request before send
 func (g GetTitles) Do(request domain.Request) (*domain.Response, error) {
 	var actionRequest Request
 	err := json.Unmarshal(request.ActionFields, &actionRequest)
@@ -22,8 +24,10 @@ func (g GetTitles) Do(request domain.Request) (*domain.Response, error) {
 	return &domain.Response{
 		Result: actionResponse,
 	}, nil
+
 }
 
+// SendRequests - send requests to urls and read responses from client
 func (g GetTitles) SendRequests(serviceRequest Request) Response {
 	var response Response
 	ctx := context.Background()
